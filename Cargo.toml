@@ -12,3 +12,7 @@ serde_json = "1.0.79"
 [[bin]]
 name = "chapter_1"
 path = "src/chapter_1.rs"
+
+[[bin]]
+name = "chapter_2"
+path = "src/chapter_2.rs"
