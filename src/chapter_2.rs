@@ -95,7 +95,7 @@ fn buy(user: &mut User, items: Vec<Item>, stocks: &mut Vec<Item>) -> Result<(), 
     }
 
     for item in items {
-        stocks.retain(|stock| stock == &item);
+        stocks.retain(|stock| stock != &item);
         user.owned_items.push(item);
     }
     user.wallet -= total_price;
