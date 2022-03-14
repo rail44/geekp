@@ -1,9 +1,9 @@
 use std::fmt;
 
 struct User {
-    name: String,
-    wallet: f64,
-    owned_items: Vec<Item>,
+    name: String, // 文字列
+    wallet: f64, // 64bitの浮動小数点数
+    owned_items: Vec<Item>, // ItemのVector(配列)
 }
 
 const DEFULT_WALLET_AMMOUNT: f64 = 500000.0;
@@ -11,7 +11,7 @@ const DEFULT_WALLET_AMMOUNT: f64 = 500000.0;
 impl User {
     fn new(name: String) -> User {
         User {
-            name,
+            name, // `name: name` の省略記法
             wallet: DEFULT_WALLET_AMMOUNT,
             owned_items: Vec::new(),
         }
@@ -61,16 +61,11 @@ impl fmt::Display for Item {
     }
 }
 
-// なるべくpureなrustで楽なエラーハンドリングをするためのエイリアス
-// 本来はanyhowなどのライブラリを導入した方が現実の開発の上では便利になる
-type Error = Box<dyn std::error::Error>;
-
-fn main() -> Result<(), Error> {
-    let name = inquire::Text::new("あなたのお名前は?").prompt()?;
+fn main() {
+    let name = inquire::Text::new("あなたのお名前は?").prompt().unwrap();
     let user = User::new(name);
     let stocks = Item::default_stocks();
     println!("{}", user);
     let _cart = inquire::MultiSelect::new("買いたい商品を選んでください", stocks).prompt();
     println!("{}", user);
-    Ok(())
 }
