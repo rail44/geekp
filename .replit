@@ -1,4 +1,6 @@
-run = ["cargo", "build"]
+run = ["cargo", "check"]
+
+onBoot = ["cargo", "build"]
 
 [packager]
 language = "rust"

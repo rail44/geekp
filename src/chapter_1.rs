@@ -9,12 +9,18 @@ struct User {
 const DEFULT_WALLET_AMMOUNT: f64 = 500000.0;
 
 impl User {
-    fn new(name: String) -> User {
-        User {
+    // 引数リストにselfを含まない場合、クラスメソッドのような働きになる
+    fn new(name: String, wallet: f64) -> User {
+        User { // Userの初期化記法
             name, // `name: name` の省略記法
-            wallet: DEFULT_WALLET_AMMOUNT,
+            wallet,
             owned_items: Vec::new(),
         }
+    }  // 行末からセミコロンを除くことで、returnの省略記法になる
+
+    // &selfを第一引数にすることでインスタンスメソッドのような働きになる
+    fn _has_enough_money(&self, money: f64) -> bool {
+        self.wallet >= money
     }
 }
 
@@ -26,9 +32,9 @@ impl fmt::Display for User {
             self.wallet,
             self.owned_items
                 .iter()
-                .map(|item| format!("{}", item))
-                .collect::<Vec<_>>()
-                .join(", ")
+                .map(|item| format!("{}", item)) // owned_itemsのそれぞれを文字列に変換して
+                .collect::<Vec<_>>() // それらを要素にもったVectorとしてcollectし
+                .join(", ") // ", " で結合した文字列を得る
         ))
     }
 }
@@ -63,9 +69,20 @@ impl fmt::Display for Item {
 
 fn main() {
     let name = inquire::Text::new("あなたのお名前は?").prompt().unwrap();
-    let user = User::new(name);
+    let user = User::new(name, DEFULT_WALLET_AMMOUNT);
     let stocks = Item::default_stocks();
     println!("{}", user);
     let _cart = inquire::MultiSelect::new("買いたい商品を選んでください", stocks).prompt();
     println!("{}", user);
+}
+
+// これを書くことでテストランナーの実行対象になる
+// 文法的にはattributeと呼ばれるもの
+#[test]
+fn test_user_has_enough_money() {
+    let user = User::new("hoge".to_string(), 100.0);
+
+    assert_eq!(user._has_enough_money(100.0), true);
+    assert_eq!(user._has_enough_money(80.0), true);
+    assert_eq!(user._has_enough_money(105.0), false);
 }
