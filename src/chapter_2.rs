@@ -90,6 +90,7 @@ impl fmt::Display for GeekpError {
         w.write_fmt(format_args!("{:?}", self))
     }
 }
+
 impl std::error::Error for GeekpError {}
 
 // 借用元のデータを変更したい引数については&mutで宣言
@@ -110,16 +111,16 @@ fn buy(user: &mut User, cart: Vec<Item>, stocks: &mut Vec<Item>) -> Result<(), E
     Ok(())
 }
 
-fn main() -> Result<(), Error> {
-    let name = inquire::Text::new("あなたのお名前は?").prompt()?;
+fn main() {
+    let name = inquire::Text::new("あなたのお名前は?").prompt().unwrap();
     // mutableなデータはlet mutで宣言
     let mut user = User::new(name);
     let mut stocks = Item::default_stocks();
     println!("{}", user);
     let cart =
-        inquire::MultiSelect::new("買いたい商品を選んでください", stocks.clone()).prompt()?;
+        inquire::MultiSelect::new("買いたい商品を選んでください", stocks.clone()).prompt().unwrap();
 
-    buy(&mut user, cart, &mut stocks)?;
+    buy(&mut user, cart, &mut stocks).unwrap();
 
     println!("{}", user);
     println!(
@@ -130,5 +131,4 @@ fn main() -> Result<(), Error> {
             .collect::<Vec<_>>()
             .join(", ")
     );
-    Ok(())
 }
