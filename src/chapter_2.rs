@@ -57,6 +57,8 @@ impl Item {
 
     fn default_stocks() -> Vec<Item> {
         vec![
+            Item::new("ひのきのぼう", 100.0),
+            Item::new("チャージライフル", 10000.0),
             Item::new("MacBook Pro", 239800.0),
             Item::new("HHKB Pro", 25300.0),
             Item::new("SICP", 5060.0),
@@ -70,6 +72,7 @@ impl fmt::Display for Item {
     }
 }
 
+// 名前が同じなら同じアイテムとして扱う
 impl PartialEq for Item {
     fn eq(&self, other: &Self) -> bool {
         self.name == other.name

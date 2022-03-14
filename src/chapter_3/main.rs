@@ -1,6 +1,8 @@
+// 用いるモジュールの宣言
 mod item;
 mod user;
 
+// プロジェクト(crate)内からのimport
 use crate::item::Item;
 use crate::user::User;
 
@@ -11,12 +13,12 @@ fn buy(user: &mut User, cart: Vec<Item>, stocks: &mut Vec<Item>) {
     }
 
     for item in cart {
-        let pos = stocks.iter().position(|stock| stock == &item).unwrap(); // 買うitemのstocks配列上でのindex
-        stocks.remove(pos); // 在庫から削除
+        let pos = stocks.iter().position(|stock| stock == &item).unwrap();
+        stocks.remove(pos);
 
-        user.owned_items.push(item); // 所持品へ追加
+        user.owned_items.push(item);
     }
-    user.wallet -= total_price; // 所持金を減らす
+    user.wallet -= total_price;
 }
 
 fn main() {
@@ -24,6 +26,7 @@ fn main() {
     let mut user = User::new(name);
     let mut stocks = Item::default_stocks();
 
+    // 無限ループ
     loop {
         println!("{}", user);
         let cart =
