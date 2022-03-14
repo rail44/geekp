@@ -17,6 +17,10 @@ impl User {
             owned_items: Vec::new(),
         }
     }
+
+    pub fn has_enough_money(&self, money: f64) -> bool {
+        self.wallet >= money
+    }
 }
 
 impl fmt::Display for User {
