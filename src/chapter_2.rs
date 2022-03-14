@@ -1,9 +1,5 @@
 use std::fmt;
 
-// なるべくpureなrustで楽なエラーハンドリングをするためのエイリアス
-// 本来はanyhowなどのライブラリを導入した方が現実の開発の上では便利になる
-type Error = Box<dyn std::error::Error>;
-
 struct User {
     name: String,
     wallet: f64,
@@ -80,24 +76,11 @@ impl PartialEq for Item {
     }
 }
 
-#[derive(Debug)]
-enum GeekpError {
-    InsufficientMoney,
-}
-
-impl fmt::Display for GeekpError {
-    fn fmt(&self, w: &mut fmt::Formatter) -> fmt::Result {
-        w.write_fmt(format_args!("{:?}", self))
-    }
-}
-
-impl std::error::Error for GeekpError {}
-
 // 借用元のデータを変更したい引数については&mutで宣言
-fn buy(user: &mut User, cart: Vec<Item>, stocks: &mut Vec<Item>) -> Result<(), Error> {
+fn buy(user: &mut User, cart: Vec<Item>, stocks: &mut Vec<Item>) {
     let total_price = Item::total_price(&cart);
     if !user.has_enough_money(total_price) {
-        return Err(GeekpError::InsufficientMoney.into());
+        panic!("InsufficientMoney!");
     }
 
     for item in cart {
@@ -107,8 +90,6 @@ fn buy(user: &mut User, cart: Vec<Item>, stocks: &mut Vec<Item>) -> Result<(), E
         user.owned_items.push(item); // 所持品へ追加
     }
     user.wallet -= total_price; // 所持金を減らす
-
-    Ok(())
 }
 
 fn main() {
@@ -120,7 +101,7 @@ fn main() {
     let cart =
         inquire::MultiSelect::new("買いたい商品を選んでください", stocks.clone()).prompt().unwrap();
 
-    buy(&mut user, cart, &mut stocks).unwrap();
+    buy(&mut user, cart, &mut stocks);
 
     println!("{}", user);
     println!(
