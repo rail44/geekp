@@ -101,8 +101,9 @@ fn main() {
     let mut user = User::new(name);
     let mut stocks = Item::default_stocks();
     println!("{}", user);
-    let cart =
-        inquire::MultiSelect::new("買いたい商品を選んでください", stocks.clone()).prompt().unwrap();
+    let cart = inquire::MultiSelect::new("買いたい商品を選んでください", stocks.clone())
+        .prompt()
+        .unwrap();
 
     buy(&mut user, cart, &mut stocks);
 

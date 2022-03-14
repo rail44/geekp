@@ -1,15 +1,23 @@
-// 用いるモジュールの宣言
 mod item;
 mod user;
 
-// プロジェクト(crate)内からのimport
 use crate::item::Item;
 use crate::user::User;
 
-fn buy(user: &mut User, cart: Vec<Item>, stocks: &mut Vec<Item>) {
+// enum Result<T, E> {
+//     Ok(T),
+//     Err(E),
+// }
+
+#[derive(Debug)]
+enum Error {
+    InsufficientMoney
+}
+
+fn buy(user: &mut User, cart: Vec<Item>, stocks: &mut Vec<Item>) -> Result<(), Error> {
     let total_price = Item::total_price(&cart);
     if !user.has_enough_money(total_price) {
-        panic!("InsufficientMoney!");
+        return Err(Error::InsufficientMoney)
     }
 
     for item in cart {
@@ -19,6 +27,7 @@ fn buy(user: &mut User, cart: Vec<Item>, stocks: &mut Vec<Item>) {
         user.owned_items.push(item);
     }
     user.wallet -= total_price;
+    Ok(())
 }
 
 fn main() {
@@ -29,11 +38,10 @@ fn main() {
     // 無限ループ
     loop {
         println!("{}", user);
-        let cart = inquire::MultiSelect::new("買いたい商品を選んでください", stocks.clone())
-            .prompt()
-            .unwrap();
+        let cart =
+            inquire::MultiSelect::new("買いたい商品を選んでください", stocks.clone()).prompt().unwrap();
 
-        buy(&mut user, cart, &mut stocks);
+        buy(&mut user, cart, &mut stocks).unwrap();
 
         println!(
             "{}",
