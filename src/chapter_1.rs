@@ -1,8 +1,8 @@
 use std::fmt;
 
 struct User {
-    name: String, // 文字列
-    wallet: f64, // 64bitの浮動小数点数
+    name: String,           // 文字列
+    wallet: f64,            // 64bitの浮動小数点数
     owned_items: Vec<Item>, // ItemのVector(配列)
 }
 
@@ -11,12 +11,13 @@ const DEFULT_WALLET_AMMOUNT: f64 = 500000.0;
 impl User {
     // 引数リストにselfを含まない場合、クラスメソッドのような働きになる
     fn new(name: String, wallet: f64) -> User {
-        User { // Userの初期化記法
+        User {
+            // Userの初期化記法
             name, // `name: name` の省略記法
             wallet,
             owned_items: Vec::new(),
         }
-    }  // 行末からセミコロンを除くことで、returnの省略記法になる
+    } // 行末からセミコロンを除くことで、returnの省略記法になる
 
     // &selfを第一引数にすることでインスタンスメソッドのような働きになる
     fn _has_enough_money(&self, money: f64) -> bool {

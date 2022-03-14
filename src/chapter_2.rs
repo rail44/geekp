@@ -1,5 +1,9 @@
 use std::fmt;
 
+// なるべくpureなrustで楽なエラーハンドリングをするためのエイリアス
+// 本来はanyhowなどのライブラリを導入した方が現実の開発の上では便利になる
+type Error = Box<dyn std::error::Error>;
+
 struct User {
     name: String,
     wallet: f64,
@@ -15,6 +19,10 @@ impl User {
             wallet: DEFULT_WALLET_AMMOUNT,
             owned_items: Vec::new(),
         }
+    }
+
+    fn has_enough_money(&self, money: f64) -> bool {
+        self.wallet >= money
     }
 }
 
@@ -42,13 +50,13 @@ struct Item {
 impl Item {
     fn new(name: &str, price: f64) -> Item {
         Item {
-            name: name.to_string(),
+            name: name.to_string(), // &str -> String
             price,
         }
     }
 
     fn total_price(items: &[Self]) -> f64 {
-        items.iter().map(|item| item.price).sum()
+        items.iter().map(|item| item.price).sum() // itemの配列から、合計金額を計算
     }
 
     fn default_stocks() -> Vec<Item> {
@@ -72,10 +80,6 @@ impl PartialEq for Item {
     }
 }
 
-// なるべくpureなrustで楽なエラーハンドリングをするためのエイリアス
-// 本来はanyhowなどのライブラリを導入した方が現実の開発の上では便利になる
-type Error = Box<dyn std::error::Error>;
-
 #[derive(Debug)]
 enum GeekpError {
     InsufficientMoney,
@@ -88,23 +92,27 @@ impl fmt::Display for GeekpError {
 }
 impl std::error::Error for GeekpError {}
 
-fn buy(user: &mut User, items: Vec<Item>, stocks: &mut Vec<Item>) -> Result<(), Error> {
-    let total_price = Item::total_price(&items);
-    if total_price > user.wallet {
+// 借用元のデータを変更したい引数については&mutで宣言
+fn buy(user: &mut User, cart: Vec<Item>, stocks: &mut Vec<Item>) -> Result<(), Error> {
+    let total_price = Item::total_price(&cart);
+    if !user.has_enough_money(total_price) {
         return Err(GeekpError::InsufficientMoney.into());
     }
 
-    for item in items {
-        stocks.retain(|stock| stock != &item);
-        user.owned_items.push(item);
+    for item in cart {
+        let pos = stocks.iter().position(|stock| stock == &item).unwrap(); // 買うitemのstocks配列上でのindex
+        stocks.remove(pos); // 在庫から削除
+
+        user.owned_items.push(item); // 所持品へ追加
     }
-    user.wallet -= total_price;
+    user.wallet -= total_price; // 所持金を減らす
 
     Ok(())
 }
 
 fn main() -> Result<(), Error> {
     let name = inquire::Text::new("あなたのお名前は?").prompt()?;
+    // mutableなデータはlet mutで宣言
     let mut user = User::new(name);
     let mut stocks = Item::default_stocks();
     println!("{}", user);
