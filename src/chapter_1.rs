@@ -26,7 +26,7 @@ impl fmt::Display for User {
             self.wallet,
             self.owned_items
                 .iter()
-                .map(|item| format!("{item}"))
+                .map(|item| format!("{}", item))
                 .collect::<Vec<_>>()
                 .join(", ")
         ))

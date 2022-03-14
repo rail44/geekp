@@ -51,7 +51,7 @@ fn main() -> Result<(), Error> {
             "{}",
             stocks
                 .iter()
-                .map(|stock| format!("{stock}"))
+                .map(|stock| format!("{}", stock))
                 .collect::<Vec<_>>()
                 .join(", ")
         );
